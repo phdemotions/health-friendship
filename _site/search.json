@@ -1,0 +1,16 @@
+[
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "health friendship",
+    "section": "",
+    "text": "# Helper function to format dates in ordinal style (1st, 2nd, 3rd, etc.)\nordinal_date &lt;- function(date) {\n  suffix &lt;- c(\"th\", \"st\", \"nd\", \"rd\", \"th\", \"th\", \"th\", \"th\", \"th\", \"th\")\n  day &lt;- as.integer(format(date, \"%d\"))\n  month &lt;- format(date, \"%B\")\n  paste0(month, \" \", day, suffix[day %% 10 + 1 * (day &lt; 10 | day &gt; 20)])\n}\n\n\n# Function to create plots\ncreate_plot &lt;- function(data, title) {\n  ggplot(data, aes(x = Person, y = Total_Workouts, fill = Person)) +\n    geom_col(show.legend = FALSE, width = 0.7) +\n    scale_fill_manual(values = wes_palette(\"GrandBudapest2\", n = length(unique(data$Person)), type = \"continuous\")) +\n    labs(x = \"\", y = \"# of workouts\", title = title) +\n    theme_minimal(base_size = 14) +\n    theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),\n          axis.text.y = element_text(hjust = 0),\n          axis.title.x = element_text(margin = margin(t = 10, b = 10))) +\n    coord_flip()\n}\n\n# Create the plots with dynamic titles using glue and formatted dates\nweekly_plot &lt;- create_plot(filtered_week, glue::glue(\"{ordinal_date(as.Date(week_start_date))} to {ordinal_date(as.Date(week_end_date))} Workout Leaderboard\"))\nfull_plot &lt;- create_plot(full_data, glue::glue(\"{ordinal_date(as.Date(month_start_date))} to {ordinal_date(as.Date(month_end_date))} Workout Leaderboard\"))\n\n\nlibrary(gridExtra)\nlibrary(grid)\nlibrary(gtable)\n\n# Assuming that you have already created `weekly_plot` and `full_data`\n# Create a table grob from full_data\nfull_data_table_grob &lt;- tableGrob(full_data)\n\n# Create a title for the table grob using textGrob\ntable_title &lt;- textGrob(\"Full Data Summary\", gp = gpar(fontsize = 12, fontface = \"bold\"), vjust = 0.5)\n\n# Construct a gtable for the titled table\ntitled_table_grob &lt;- gtable::gtable(\n  widths = unit(1, \"npc\"),\n  heights = unit.c(unit(1, \"lines\"), unit(1, \"npc\"))\n)\n\n# Add the title and table grob to the gtable\ntitled_table_grob &lt;- gtable::gtable_add_grob(\n  titled_table_grob,\n  grobs = list(table_title, full_data_table_grob),\n  t = c(1, 2), l = c(1, 1), b = c(1, 2), r = c(1, 1)\n)\n\n# Adjust the row heights if necessary to ensure no overlap\ntitled_table_grob$heights &lt;- unit.c(unit(10, \"lines\"), unit(1, \"npc\")) # Give more space to the title\n\n# Use plot_grid to combine the weekly plot and the titled table, ensuring vertical alignment\ncombined_grob &lt;- plot_grid(weekly_plot, titled_table_grob, ncol = 1, align = 'v', rel_heights = c(1, 1.5))\n\nWarning: Graphs cannot be vertically aligned unless the axis parameter is set.\nPlacing graphs unaligned.\n\ncombined_grob\n\n\n\n\n\n\n\n# Save the image with adjusted dimensions for better mobile viewing\n# Setting the width smaller and the height larger for a vertical format\nggsave(glue::glue(\"figures/workout_summary_{week_start_date}-{week_end_date}.png\"), combined_grob, width = 6, height = 12, dpi = 300, bg = \"white\")"
+  },
+  {
+    "objectID": "about.html",
+    "href": "about.html",
+    "title": "About",
+    "section": "",
+    "text": "About this site\n\n1 + 1\n\n[1] 2"
+  }
+]
